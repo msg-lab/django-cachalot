@@ -115,7 +115,7 @@ def get_last_invalidation(
         table_cache_keys = []
         for t in tables:
             keys = get_table_cache_key(db_alias, t)
-            if not isinstance(list):
+            if not isinstance(keys, list):
                 keys = [keys]
             table_cache_keys.extend([key for key in keys])
         invalidations = cachalot_caches.get_cache(

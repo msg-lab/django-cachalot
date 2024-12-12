@@ -296,7 +296,7 @@ def _get_table_cache_keys(compiler):
     table_cache_keys = []
     for t in _get_tables(db_alias, compiler.query, compiler):
         keys = get_table_cache_key(db_alias, t)
-        if not isinstance(list):
+        if not isinstance(keys, list):
             keys = [keys]
         table_cache_keys.extend([key for key in keys])
     return table_cache_keys
@@ -311,7 +311,7 @@ def _invalidate_tables(cache, db_alias, tables):
     cache_values = {}
     for t in tables:
         keys = get_table_cache_key(db_alias, t)
-        if not isinstance(list):
+        if not isinstance(keys, list):
             keys = [keys]
         cache_values |= {key: now for key in keys}
 

@@ -49,7 +49,7 @@ class CachalotPanel(Panel):
             model_cache_keys = {}
             for model in models:
                 keys = get_table_cache_key(db_alias, model._meta.db_table)
-                if not isinstance(list):
+                if not isinstance(keys, list):
                     keys = [keys]
                 model_cache_keys |= {key: model for key in keys}
             for cache_key, timestamp in cache.get_many(
