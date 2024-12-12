@@ -46,9 +46,12 @@ class CachalotPanel(Panel):
         cache = cachalot_caches.get_cache()
         for db_alias in settings.DATABASES:
             get_table_cache_key = cachalot_settings.CACHALOT_TABLE_KEYGEN
-            model_cache_keys = {
-                get_table_cache_key(db_alias, model._meta.db_table): model
-                for model in models}
+            model_cache_keys = {}
+            for model in models:
+                keys = get_table_cache_key(db_alias, model._meta.db_table)
+                if not isinstance(list):
+                    keys = [keys]
+                model_cache_keys |= {key: model for key in keys}
             for cache_key, timestamp in cache.get_many(
                     model_cache_keys.keys()).items():
                 invalidation = datetime.fromtimestamp(timestamp)

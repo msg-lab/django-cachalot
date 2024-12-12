@@ -293,8 +293,13 @@ def _get_tables(db_alias, query, compiler=False):
 def _get_table_cache_keys(compiler):
     db_alias = compiler.using
     get_table_cache_key = cachalot_settings.CACHALOT_TABLE_KEYGEN
-    return [get_table_cache_key(db_alias, t)
-            for t in _get_tables(db_alias, compiler.query, compiler)]
+    table_cache_keys = []
+    for t in _get_tables(db_alias, compiler.query, compiler):
+        keys = get_table_cache_key(db_alias, t)
+        if not isinstance(list):
+            keys = [keys]
+        table_cache_keys.extend([key for key in keys])
+    return table_cache_keys
 
 
 def _invalidate_tables(cache, db_alias, tables):
@@ -303,9 +308,17 @@ def _invalidate_tables(cache, db_alias, tables):
         return
     now = time()
     get_table_cache_key = cachalot_settings.CACHALOT_TABLE_KEYGEN
+    cache_values = {}
+    for t in tables:
+        keys = get_table_cache_key(db_alias, t)
+        if not isinstance(list):
+            keys = [keys]
+        cache_values |= {key: now for key in keys}
+
     cache.set_many(
-        {get_table_cache_key(db_alias, t): now for t in tables},
-        cachalot_settings.CACHALOT_TIMEOUT)
+        cache_values,
+        cachalot_settings.CACHALOT_TIMEOUT,
+    )
 
     if isinstance(cache, AtomicCache):
         cache.to_be_invalidated.update(tables)
