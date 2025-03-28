@@ -9,6 +9,8 @@ Requirements
 - a cache configured as ``'default'`` with one of these backends:
 
   - `django-redis <https://github.com/niwinz/django-redis>`_
+  - `redis <https://docs.djangoproject.com/en/dev/topics/cache/#redis>`_
+    (requires Django >= 4)
   - `memcached <https://docs.djangoproject.com/en/dev/topics/cache/#memcached>`_
     (using either python-memcached or pylibmc)
   - `filebased <https://docs.djangoproject.com/en/dev/topics/cache/#filesystem-caching>`_
@@ -105,6 +107,20 @@ Settings
 :Default: ``False``
 :Description: If set to ``True``, caches random queries
               (those with ``order_by('?')``).
+
+``CACHALOT_CACHE_ITERATORS``
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:Default: ``False``
+:Description:
+   If set to ``True``, cache results from QuerySets that return
+   generators. This is useful for caching the result sets of QuerySets that
+   use ``.iterator()``.
+
+   .. warnings::
+      ``.iterator()`` is often used for large result sets. Caching these can use large
+      amounts of local memory because django-cachalot has to first convert them to a list to
+      store them in the cache.
 
 .. _CACHALOT_INVALIDATE_RAW:
 
