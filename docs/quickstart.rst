@@ -4,8 +4,8 @@ Quick start
 Requirements
 ............
 
-- Django 3.2, 4.1, 4.2, 5.0, 5.1
-- Python 3.7-3.12
+- Django 4.2, 5.2, 6.0
+- Python 3.8-3.14
 - a cache configured as ``'default'`` with one of these backends:
 
   - `django-redis <https://github.com/niwinz/django-redis>`_
@@ -84,6 +84,22 @@ Settings
 .. |DATABASES| replace:: ``DATABASES``
 .. _DATABASES: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
+``CACHALOT_USE_UNSUPPORTED_DATABASE``
+~~~~~~~~~~~~~~~~~~~~~~
+
+:Default: ``False``
+:Description:
+  Whether to allow usage of unsupported databases. 
+  No startup errors will be thrown if this set to `True`.
+
+``CACHALOT_ADDITIONAL_SUPPORTED_DATABASES``
+~~~~~~~~~~~~~~~~~~~~~~
+
+:Default: ``frozenset()``
+:Description:
+  Allows us to define custom supported databases without setting 
+  ``CACHALOT_USE_UNSUPPORTED_DATABASE`` to ``True``.
+
 ``CACHALOT_TIMEOUT``
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -111,7 +127,7 @@ Settings
 ``CACHALOT_CACHE_ITERATORS``
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:Default: ``False``
+:Default: ``True``
 :Description:
    If set to ``True``, cache results from QuerySets that return
    generators. This is useful for caching the result sets of QuerySets that
@@ -120,7 +136,7 @@ Settings
    .. warnings::
       ``.iterator()`` is often used for large result sets. Caching these can use large
       amounts of local memory because django-cachalot has to first convert them to a list to
-      store them in the cache.
+      store them in the cache. Setting to ``False`` can potentially resolve out of memory issues.
 
 .. _CACHALOT_INVALIDATE_RAW:
 

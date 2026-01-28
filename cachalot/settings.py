@@ -52,7 +52,7 @@ class Settings(object):
     CACHALOT_ADDITIONAL_SUPPORTED_DATABASES = {}
     CACHALOT_TIMEOUT = None
     CACHALOT_CACHE_RANDOM = False
-    CACHALOT_CACHE_ITERATORS = False
+    CACHALOT_CACHE_ITERATORS = True
     CACHALOT_INVALIDATE_RAW = True
     CACHALOT_ONLY_CACHABLE_TABLES = ()
     CACHALOT_ONLY_CACHABLE_APPS = ()
@@ -102,8 +102,17 @@ class Settings(object):
 @Settings.add_converter('CACHALOT_DATABASES')
 def convert(value):
     if value == SUPPORTED_ONLY:
-        value = {alias for alias, setting in settings.DATABASES.items()
-                 if setting['ENGINE'] in SUPPORTED_DATABASE_ENGINES}
+        use_unsupported = getattr(settings, 'CACHALOT_USE_UNSUPPORTED_DATABASE', False)
+        additional_supported = getattr(settings, 'CACHALOT_ADDITIONAL_SUPPORTED_DATABASES', set())
+
+        if use_unsupported:
+            # All databases are enabled
+            value = set(settings.DATABASES.keys())
+        else:
+            # Include databases in SUPPORTED_DATABASE_ENGINES or ADDITIONAL_SUPPORTED_DATABASES
+            value = {alias for alias, setting in settings.DATABASES.items()
+                     if setting['ENGINE'] in SUPPORTED_DATABASE_ENGINES
+                     or setting['ENGINE'] in additional_supported}
     if value.__class__ in ITERABLES:
         return frozenset(value)
     return value
